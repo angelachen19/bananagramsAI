@@ -1,0 +1,12 @@
+#!/bin/sh
+'''exec' "/Users/angelachen/Documents/GitHub/CS4701 Practicum in AI/bananagramsAI/cs4701-env/bin/python" "$0" "$@"
+' '''
+# -*- coding: utf-8 -*-
+import re
+import sys
+
+from pycodestyle import _main
+
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw?|\.exe)?$', '', sys.argv[0])
+    sys.exit(_main())
