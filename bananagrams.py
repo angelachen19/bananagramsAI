@@ -24,7 +24,7 @@ def blankcoord():
 # checkdictionary(string)
 # Returns TRUE if string is in the dictionary file, or FALSE if not.
 def checkdictionary(string):
-    if (string + "\n") in (open('C:\Python27\dictionary.txt').read()).upper():
+    if (string + "\n") in (open('dictionary.txt').read()).upper():
         return True
     else:
         return False
@@ -305,10 +305,10 @@ while done == False:
                     continue
                 if mousey < 0 or mousey > screenheight:
                     continue
-                if not array[mousex/SIZE][mousey/SIZE] in [' ', '_']:
+                if not array[int(mousex/SIZE)][int(mousey/SIZE)] in [' ', '_']:
                     # PICKING UP A TILE
-                    grabbed = array[mousex/SIZE][mousey/SIZE]
-                    array[mousex/SIZE][mousey/SIZE] = ' '
+                    grabbed = array[int(mousex/SIZE)][int(mousey/SIZE)]
+                    array[int(mousex/SIZE)][int(mousey/SIZE)] = ' '
                     offsetx = mousex % SIZE
                     offsety = mousey % SIZE
             if myevent.type == MOUSEBUTTONDOWN and grabbed != ' ' and waitmouse == 0:
@@ -320,16 +320,16 @@ while done == False:
                     continue
                 if mousey + SIZE/2 - offsety < 0 or mousey + SIZE/2 - offsety > screenheight:
                     continue
-                if array[(mousex + SIZE/2 - offsetx)/SIZE][(mousey + SIZE/2 - offsety)/SIZE] == ' ':
-                    array[(mousex + SIZE/2 - offsetx) /
-                          SIZE][(mousey + SIZE/2 - offsety)/SIZE] = grabbed
+                if array[int((mousex + SIZE/2 - offsetx)/SIZE)][int((mousey + SIZE/2 - offsety)/SIZE)] == ' ':
+                    array[int((mousex + SIZE/2 - offsetx) /
+                          SIZE)][int((mousey + SIZE/2 - offsety)/SIZE)] = grabbed
                     grabbed = ' '
-                elif array[(mousex + SIZE/2 - offsetx)/SIZE][(mousey + SIZE/2 - offsety)/SIZE] != '_':
+                elif array[int((mousex + SIZE/2 - offsetx)/SIZE)][int((mousey + SIZE/2 - offsety)/SIZE)] != '_':
                     temp = grabbed
-                    grabbed = array[(mousex + SIZE/2 - offsetx) /
-                                    SIZE][(mousey + SIZE/2 - offsety)/SIZE]
-                    array[(mousex + SIZE/2 - offsetx) /
-                          SIZE][(mousey + SIZE/2 - offsety)/SIZE] = temp
+                    grabbed = array[int((mousex + SIZE/2 - offsetx) /
+                                    SIZE)][int((mousey + SIZE/2 - offsety)/SIZE)]
+                    array[int((mousex + SIZE/2 - offsetx) /
+                          SIZE)][int((mousey + SIZE/2 - offsety)/SIZE)] = temp
             if myevent.type == MOUSEMOTION and grabbed != ' ':
                 mousex = myevent.pos[0] - framehor
                 mousey = myevent.pos[1] - framever
