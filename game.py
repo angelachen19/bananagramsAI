@@ -6,16 +6,18 @@ from pygame.locals import *
 import mmap
 from time import sleep
 
+# Implementation of Bananagrams gameplay adapted from https://github.com/erictdobbs/bananagrams
 
 #####################################################################
 # blankcoord()
 # Returns a pair (x,y) of a blank cell on the board.
+
+
 def blankcoord():
     blanks = []
-    for ii in range(COLS):
-        for jj in range(ROWS):
-            if array[ii][jj] == ' ':
-                blanks.append((ii, jj))
+    for jj in range(ROWS):
+        if array[ii][jj] == ' ':
+            blanks.append((ii, jj))
     return random.choice(blanks)
 #####################################################################
 
