@@ -2,9 +2,7 @@
 This is a project for CS 4701: Practicum in Artificial Intelligence. Our project is to build an AI that can solve Bananagrams, a game similar to Scrabble where you must build a valid, connected word board as fast as possible. Players start with 21 letter tiles and once they incorporate all of them into a valid board, they "peel" a random new letter tile from the pile and must incorporate the letter into their existing board. For full instructions for the game, please visit [here](https://bananagrams.com/blogs/news/how-to-play-bananagrams-instructions-for-getting-started).
 
 ## How to Play
-To start the gameplay, use the command
-
-`python3 game.py`
+To start the gameplay, use the command `python3 game.py`
 
 To move tiles around on the board, click on the letter you wish to move and then click on the square you would like to move it to.
 

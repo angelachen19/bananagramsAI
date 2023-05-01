@@ -15,6 +15,10 @@ from time import sleep
 
 def blankcoord():
     blanks = []
+    for ii in range(COLS):
+        for jj in range(ROWS):
+            if array[ii][jj] == ' ':
+                blanks.append((ii, jj))
     for jj in range(ROWS):
         if array[ii][jj] == ' ':
             blanks.append((ii, jj))

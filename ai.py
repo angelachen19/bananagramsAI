@@ -1,61 +1,27 @@
-POINTS = {'a': 1, 'e': 1, 'i': 1, 'o': 1, 'u': 1, 'l': 1, 'n': 1, 's': 1, 't': 1, 'r': 1,
-          'd': 2, 'g': 2,
-          'b': 3, 'c': 3, 'm': 3, 'p': 3,
-          'f': 4, 'h': 4, 'v': 4, 'w': 4, 'y': 4,
-          'k': 5,
-          'j': 8, 'x': 8,
-          'q': 10, 'z': 10
-          }
+import game as game
+import numpy as np
 
 
-def calculate_score(word):
-    """
-    Finds the score of a word based on the scrabble system
+class Player:
 
-    Parameters
-    =======
-    word: string
+    def __init__(self):
+        self.redos = 0
+        self.peels = 0
+        self.failures = 0
+        self.successes = 0
+        self.gameTime = 0
 
-    Returns
-    =======
-    score: int
-    """
-    word = word.lower()
-    score = 0
-    for i in word:
-        score += POINTS[i]
-    return score
+    def currentState(self, game):
+        pass
+
+    def playWord(self, board):
+        pass
 
 
-def best_first_word(curr_board, letter, calculate_score=calculate_score):
-    """
-    Finding the best first word given the set of characters. Best meaning the maximum 
-    score based on the scrabble scoring.
-
-    Parameters
-    =======
-    curr_board: 2D matrix, current state of board
-    letter: string, letter peeled
-
-    Returns
-    =======
-    new_board: 2D matrix, state of the board with the best first word
-    """
-    pass
+def train():
+    agent = Player()
+    game = game
 
 
-def heuristic(curr_board, tile_pool, best_first_word=best_first_word):
-    """
-    Completing the curr_board with values from tile_pool with heuristics of 
-    best_first_word
-
-    Parameters
-    =======
-    curr_board: 2D matrix, current state of board
-    tile_pool: tiles to draw from
-
-    Returns
-    =======
-    new_board: 2D matrix, state of the board with the best first word
-    """
-    pass
+if __name__ == '__main__':
+    train()
