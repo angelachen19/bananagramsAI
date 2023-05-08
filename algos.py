@@ -69,15 +69,15 @@ def search_dawg():
     pass
 
 
-def best_first_word(curr_board, letter, calculate_score=calculate_score):
+def best_first_word(search_dawg=search_dawg(), calculate_score=calculate_score):
     """
-    Finding the best first word given the set of characters. Best meaning the maximum 
-    score based on the scrabble scoring.
+    Finding the best first word given the set of tiles. Best meaning the maximum 
+    score based on the scrabble scoring. Here we call on dawg with the seed nodes
+    as nothing.
 
     Parameters
     =======
-    curr_board: 2D matrix, current state of board
-    letter: string, letter peeled
+
 
     Returns
     =======
