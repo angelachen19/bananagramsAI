@@ -28,13 +28,20 @@ def calculate_score(word):
 
 
 class Node:
+    """
+    Represents a node in DAWG. Each node has a list of its edges to other nodes
+    Nodes are equivalent if they have the same edges leading to the same states. 
+    It can be used as a key in a dictionary with the __hash__ and__eq__ 
+    functions.
+    """
     next_id = 0
 
     def __init__(self):
+        # terminal = a word ends at that location
         self.is_terminal = False
         self.id = Node.next_id
         Node.next_id += 1
-        self.children = {}
+        self.edges = {}
 
     def __str__(self):
         out = [f"Node {self.id}\nChildren:\n"]
@@ -49,7 +56,7 @@ class Node:
             out.append("1")
         else:
             out.append("0")
-        for key, val in self.children.items():
+        for key, val in self.edges.items():
             out.append(key)
             out.append(str(val.id))
         return "_".join(out)
@@ -62,10 +69,17 @@ class Node:
 
 
 def create_dawg(dict):
-    pass
+    """
+    Create a directed acyclic word graph (DAWG) and output to a textfile
+    """
+    # create root (parent for tree)
+    root = Node()
 
 
-def search_dawg():
+def search_dawg(word, node):
+    """
+    Recursively find a word in DAWG, starting from a certain node
+    """
     pass
 
 
