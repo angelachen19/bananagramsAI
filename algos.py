@@ -247,13 +247,26 @@ def play_word(game, col, row, word, isHorizontal):
     return game.array
 
 
-def get_all_words(game, dawg):
+def play_until_peel(game, dawg, max_iter=10):
     """""
 
     game: Game object
     dawg: dawg of valid words
+    max_iter: number of tries to put down a word
     """
-    play_word(game, 13, 13, get_first_word(), True)
-    while not game.done:
-        # TODO - continuous gameplay
-        pass
+    tiles = []  # list of tile objects that are free on the board
+    for ii in range(game.COLS):
+        for jj in range(game.ROWS):
+            if game.array[ii][jj].getLetter() != ' ':
+                tiles.append(game.array[ii][jj])
+    first_word = get_first_word(tiles, "", [], dawg)
+    play_word(game, 8, 8, first_word, True)
+    for l in first_word:
+        for _, t in enumerate(tiles):
+            if t.getLetter() == l:
+                tiles.remove(t)
+
+    attempts = 0
+    while tiles and attempts < iter:
+        play_word(find_word_and_loc(game, dawg))
+        attempts += 1
