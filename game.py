@@ -24,6 +24,7 @@ class Game:
         self.SIZE = SIZE
         self.array = [[tile.Tile(' ')]*self.ROWS for x in range(self.COLS)]
         self.invalid = []
+        self.isTesting = True
 
         self.screenwidth = int(self.SIZE * self.COLS)
         self.screenheight = int(self.SIZE * self.ROWS)
@@ -200,36 +201,54 @@ class Game:
         skipanimation = False
         x = 0
         y = 0
-        for ii in range(numletters):
-            character = random.choice(self.letterbag)
-            letterTile = tile.Tile(character)
-            newletterbag = self.letterbag.replace(character, "", 1)
-            self.letterbag = newletterbag
-
-            self.array[x][y] = letterTile
-            self.drawconsole()
-            self.drawgameboard()
-            display.flip()
-            if skipanimation == False:
-                sleep(0.15)
-                # soundpop.play()
-            for myevent in event.get():
-                if myevent.type == MOUSEBUTTONDOWN or myevent.type == KEYDOWN:
-                    skipanimation = True
-            if x == self.COLS-1:
-                x = 0
-                y += 1
-            else:
-                x += 1
+        if self.isTesting:
+            for ii in ['C', 'A', 'B', 'Y']:
+                letterTile = tile.Tile(ii)
+                self.array[x][y] = letterTile
+                self.drawconsole()
+                self.drawgameboard()
+                display.flip()
+                if skipanimation == False:
+                    sleep(0.15)
+                    # soundpop.play()
+                for myevent in event.get():
+                    if myevent.type == MOUSEBUTTONDOWN or myevent.type == KEYDOWN:
+                        skipanimation = True
+                if x == self.COLS-1:
+                    x = 0
+                    y += 1
+                else:
+                    x += 1
+        else:
+            for ii in range(numletters):
+                character = random.choice(self.letterbag)
+                letterTile = tile.Tile(character)
+                newletterbag = self.letterbag.replace(character, "", 1)
+                self.letterbag = newletterbag
+                self.array[x][y] = letterTile
+                self.drawconsole()
+                self.drawgameboard()
+                display.flip()
+                if skipanimation == False:
+                    sleep(0.15)
+                    # soundpop.play()
+                for myevent in event.get():
+                    if myevent.type == MOUSEBUTTONDOWN or myevent.type == KEYDOWN:
+                        skipanimation = True
+                if x == self.COLS-1:
+                    x = 0
+                    y += 1
+                else:
+                    x += 1
 
     # getTiles()
-    # Returns an array of Tile objects that are currently on the board
+    # Returns an array of tuples of (col, row, Tile objects) that are currently on the board
     def getTiles(self):
         currentBoard = []
         for ii in range(self.COLS):
             for jj in range(self.ROWS):
                 if self.array[ii][jj].getLetter() != ' ':
-                    currentBoard.append(self.array[ii][jj])
+                    currentBoard.append((ii, jj, self.array[ii][jj]))
         # test = []
         # for i in range(len(currentBoard)):
         #     test.append(currentBoard[i].getLetter())

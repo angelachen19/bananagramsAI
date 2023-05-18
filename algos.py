@@ -1,4 +1,5 @@
 from tile import Tile, POINTS
+import game
 # start of DAWG Implementation from scrabble-solver by aydinschwa on github https://github.com/aydinschwa/Scrabble-Solver/ for DAWG implementation
 
 # the class of the node in DAWG
@@ -114,7 +115,7 @@ def score(word):
 
 def get_first_word(tiles, curr_word, valid_words, curr_node):
     """
-    return the best first word based on a set of tiles
+    return the best word based on a set of tiles
 
     tiles: list of tile objects
     dawg: points to the root node of our DAWG
@@ -142,3 +143,97 @@ def get_highest_scoring(valid_words):
             opt = word
             max_score = score(word)
     return opt
+
+
+def find_word_and_loc(game, dawg):
+    """
+    Returns the optimal word's starting index, as (col,row), the optimal word,
+    and the direction that the word goes (rightwards -> True, downwards -> False)
+
+    For a word to be playable, it must be connected to the existing tiles on
+    the board and it must not overlap with any other words.
+
+    game: Game object
+    dawg: node, root of DAWG
+    """
+    tup = game.getTiles()
+    rack = []       # unplayed tiles
+    anchors = []    # list of tuples of (col,row,tile) of tiles on the board
+    playable = []   # list of tuples of (col,row,word,isHorizontal)
+    playable_words = []  # list of words -- makes it easier to find highest scoring one
+    for (col, row, tile) in tup:
+        if tile.isPlaced:
+            anchors.append((col, row, tile))
+        else:
+            rack.append(tile)
+    # try one anchor tile at a time to build our next word
+    for col, row, anchor_tile in anchors:
+        rack.append(anchor_tile)
+        word = get_first_word(rack, "", [], dawg)
+
+        # word needs to contain the anchor to be connected to the board
+        anchor_index = word.find(anchor_tile.letter)
+        if anchor_index != -1:
+            isHorizontal = True
+            isVertical = True
+            for i in range(anchor_index):
+                # check that each tile to the left of anchor is blank
+                if (col-i) < 0 or game.array[col-i][row] == ' ':
+                    isHorizontal = False
+                # check above anchor
+                if (row-i) < 0 or game.array[col][row-i] == ' ':
+                    isVertical = False
+            for j in range(anchor_index+1, len(word)):
+                # check to the right of anchor
+                if (col+j) >= game.ROWS or game.array[col+j][row] == ' ':
+                    isHorizontal = False
+                # check below anchor
+                if (row+j) >= game.COLS or game.array[col][row+j] == ' ':
+                    isVertical = False
+            # if word is playable
+            if (isHorizontal or isVertical):
+                playable.append((col, row, word, isHorizontal))
+                playable_words.append(word)
+    opt = get_highest_scoring(playable_words)
+    idx = playable_words.index(opt)
+    # returns the tuple of the form (col, row, word, isHorizontal) at index idx
+    return playable[idx]
+
+
+def play_word(game, col, row, word, isHorizontal):
+    """
+    Updates the game board with the word placed on it.
+
+    game: Game object
+    col: int, x index where the word begins
+    row: int, y index where the word begins
+    word: string, word to be played
+    isHorizontal: boolean, True->rightward, False->downward
+    """
+    word_copy = word.lower()
+    while word_copy:
+        for ii in range(game.COLS):
+            for jj in range(game.ROWS):
+                if game.array[ii][jj].lower() in word_copy:
+                    word_copy = word_copy.replace(game.array[ii][jj], "")
+                    game.array[ii][jj] = ' '
+    for i in range(len(word)):
+        tile = Tile(word[i].upper())
+        tile.setIsPlaced(True)
+        if isHorizontal:
+            game.array[col+i][row] = tile
+        else:
+            game.array[col][row+i] = tile
+    return game.array
+
+
+def get_all_words(game, dawg):
+    """""
+
+    game: Game object
+    dawg: dawg of valid words
+    """
+    play_word(game, 13, 13, get_first_word(), True)
+    while not game.done:
+        # TODO - continuous gameplay
+        pass

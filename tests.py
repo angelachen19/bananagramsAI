@@ -1,5 +1,6 @@
 from algos import *
 from tile import Tile
+from game import Game
 import unittest
 
 # Check if we get the right number of tiles in hand
@@ -39,7 +40,7 @@ class TestAlgos(unittest.TestCase):
         self.assertEqual(is_prefix("KOBOL", self.__class__.test_dawg_root),
                          True, "KOBOL is not a prefix")
 
-    def test_is_prefix_4(self):
+    def test_is_prefix_3(self):
         self.assertEqual(is_prefix("PRODDE", self.__class__.test_dawg_root),
                          True, "PRODDE is not a prefix")
 
@@ -67,6 +68,15 @@ class TestAlgos(unittest.TestCase):
     def test_get_first_word3(self):
         self.assertEqual(get_first_word(self.__class__.tiles_3, "", [], self.__class__.test_dawg_root), "CHAFED",
                          get_first_word(self.__class__.tiles_3, "", [], self.__class__.test_dawg_root) + " is not equal to CHAFED")
+
+    game = Game()
+    # test find_word_and_loc
+
+    def find_word_and_loc1(self):
+        output = find_word_and_loc(game, self.__class__.test_dawg_root)
+        self.assertEqual((output[0], output[1]), (13, 13),
+                         output[0] + ", " + output[1] + " is not 13, 13")
+    # test play_word
 
 
 if __name__ == "__main__":
