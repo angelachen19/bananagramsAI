@@ -29,6 +29,8 @@ class Game:
         self.screenheight = int(self.SIZE * self.ROWS)
         self.framehor = self.SIZE
         self.framever = self.SIZE
+        self.successes = 0
+        self.resets = 0
 
         self.screen = display.set_mode(
             [self.screenwidth + self.framehor*2, self.screenheight + self.framever*5])
@@ -176,6 +178,7 @@ class Game:
         # global letterbag, grabbed
         if self.letterbag == "":
             self.complete = True
+            self.successes += 1
             self.drawendscreen()
             return
         elif len(self.letterbag) == 1:
@@ -565,16 +568,18 @@ class Game:
                 print(
                     'Maximum of 5 reshuffles per game exceeded. Restarting game now...')
                 sleep(0.15)
+                self.resets += 1
                 self.reset()
         elif action == 3:  # reset entire game
             reward -= 10
+            self.resets += 1
             self.reset()
-            return reward, self.complete, self.peels
+            return reward, self.complete, self.numBoardShuffles, self.gametime
 
         # update GUI
         self.drawgameboard()
         display.flip()
-        return reward, self.complete, self.peels
+        return reward, self.complete, self.numBoardShuffles, self.gametime
 
 
 if __name__ == '__main__':
