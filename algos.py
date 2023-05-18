@@ -1,5 +1,3 @@
-import dawg
-
 # start of DAWG Implementation from scrabble-solver by aydinschwa on github https://github.com/aydinschwa/Scrabble-Solver/ for DAWG implementation
 
 # the class of the node in DAWG
@@ -70,12 +68,10 @@ def create_dawg(dictionary):
         prev_word = curr_word
 
     min(curr_node, 0, checked_nodes, unchecked_nodes)
-    # Test
-    print(len(checked_nodes))
     return root
 
 
-def valid_word(word, curr_node):
+def is_valid_word(word, curr_node):
     for l in word:
         if l not in curr_node.children:
             return False
@@ -86,6 +82,13 @@ def valid_word(word, curr_node):
     else:
         return False
 
+
+def is_prefix(pref, curr_node):
+    for l in pref:
+        if l not in curr_node.children:
+            return False
+        curr_node = curr_node.children[l]
+    return True
 # end of DAWG Implementation from scrabble-solver by aydinschwa on github https://github.com/aydinschwa/Scrabble-Solver/ for DAWG implementation
 
 
@@ -115,6 +118,84 @@ def score(word):
         score += points_dict[i]
     return score
 
+# Referenced
+
+
+def word_from_start(start, pool, dawg):
+    """
+    Return the highest scoring word with prefix of `start` and using
+    letters from the pool `pool`
+
+    start: letter
+    visited: list of letters we tried
+    pool: list of letters in hand
+    dawg: points to the root node of our DAWG
+    """
+    best_word = ''
+    stack = []
+    stack.append((start, dawg))
+
+    while len(stack) > 0:
+        curr = stack.pop()  # tuple of a string and node
+        curr_node = curr[1]
+        for letter in pool:
+            if letter not in curr_node.children:
+                continue
+            letter_node = curr_node.children.get(letter)
+            temp = curr[0]+letter  # temporarily append letter
+            if is_valid_word(temp, dawg) and score(temp) > score(best_word):
+                best_word = temp
+            stack.append((letter, letter_node))
+    return best_word
+
+
+# def get_first_word(tiles, dawg):
+#     """
+#     return the best first word based on a set of tiles
+
+#     tiles: list of tile objects
+#     dawg: points to the root node of our DAWG
+#     """
+#     opt_word = ''
+#     highest_score = 0
+#     for letter in tiles:
+#         pool = tiles.copy().remove(letter)
+#         current_best_word = word_from_start(letter, pool, dawg)
+#         if score(current_best_word) > highest_score:
+#             opt_word = current_best_word
+#             highest_score = score(current_best_word)
+#     return opt_word
+
+
+# def get_first_word(tiles, dawg):
+#     """
+#     return the best first word based on a set of tiles
+
+#     tiles: list of tile objexts
+#     dawg: points to the root node of our DAWG
+#     """
+#     opt_word = ''
+#     highest_score = 0
+#     curr_node = dawg
+#     curr_word = ''
+
+#     for t in enumerate(tiles):
+#         letter = get_letter(tiles[t])
+#         curr_word = letter
+#         tiles_copy = tiles.copy()
+#         unused = tiles_copy.remove(letter)
+#         for t_2 in enumerate(unused):
+#             letter_2 = get_letter(tiles[t_2])
+#             if letter_2 in curr_node.children():
+#                 curr_word += letter
+#                 curr_node = curr_node.children[letter]
+#                 unused = unused.remove(letter)
+#                 # get_first_word()
+#                 if curr_node.terminal and score(curr_word) > highest_score:
+#                     opt_word = curr_word
+#                     highest_score = score(curr_word)
+#     return opt_word
+
 
 def next_best_word(tiles, seed, curr_board, dawg):
     """
@@ -133,8 +214,8 @@ def next_best_word(tiles, seed, curr_board, dawg):
     """
     # find the longest word given the seed and set of tiles
     # check if word is in DAWG
-    # best_word = ''
-    # highest_score = 0
+    best_word = ''
+    highest_score = 0
 
     # for i in range(len(tiles)):
     #     for j in range(i+1, len(tiles)+1):
