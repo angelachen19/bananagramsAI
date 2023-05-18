@@ -238,7 +238,6 @@ class Game:
     # resetBoard()
     # Puts letters back into initial position for player to rebuild board after peeling
     def resetBoard(self):
-        self.resetBoard = True
         currentBoard = []
         for ii in range(self.COLS):
             for jj in range(self.ROWS):
@@ -259,7 +258,7 @@ class Game:
                 y += 1
             else:
                 x += 1
-        self.resetBoard = False
+        self.numBoardShuffles += 1
 
     # reset()
     # Resets the game to initial game state
@@ -287,7 +286,7 @@ class Game:
         self.mousey = 0
         # If complete is True, the game is completed and there are no more letters to add to the board
         self.complete = False
-        self.resetBoard = False
+        self.numBoardShuffles = 0
         self.freshletters(21)
 
     # checkdictionary(string)
@@ -394,9 +393,21 @@ class Game:
         else:
             return True
 
+    # countPlacedTiles()
+    # Returns a tuple (placed, not placed) of ints representing the number of placed/not place tiles
+    def countPlacedTiles(self):
+        placed = 0
+        notPlaced = 0
+        for ii in range(self.COLS):
+            for jj in range(self.ROWS):
+                if self.array[ii][jj].getIsPlaced():
+                    placed += 1
+                else:
+                    notPlaced += 1
+        return (placed, notPlaced)
+
     # play()
     # Main game function, includes event handling drawing the game board, and updating
-
     def play(self):
         framehor = self.framehor
         framever = self.framever
@@ -526,12 +537,44 @@ class Game:
         display.flip()
 
     # ---- AI functions -----
-    # playBoard()
-    # Plays the calculated board on the pygame GUI
-    # TODO
+    # playAction()
+    # Plays the given action on the game board
+    # Returns reward, complete, # of peels, score
+    def playAction(self, action):
+        for myevent in event.get():
+            if event.type == QUIT:
+                quit()
+        reward = 0
+        (placed, notPlaced) = self.countPlacedTiles()
+        # parse action into correct move
+        if action == 0:
+            # TODO place tiles
+            do = 0
+        elif action == 1:  # peel a letter
+            if self.checkwords() == True:
+                # reward when entire board is complete and valid
+                self.peelletter()
+                reward += 10
+            else:
+                reward -= 10
+        elif action == 2:  # reshuffle board
+            self.resetBoard()
+            reward -= 3
+            if self.numBoardShuffles > 5:  # max 5 reshuffles, after 5th, reset game
+                reward -= 10
+                print(
+                    'Maximum of 5 reshuffles per game exceeded. Restarting game now...')
+                sleep(0.15)
+                self.reset()
+        elif action == 3:  # reset entire game
+            reward -= 10
+            self.reset()
+            return reward, self.complete, self.peels
 
-    # def playBoard():
-    #     pass
+        # update GUI
+        self.drawgameboard()
+        display.flip()
+        return reward, self.complete, self.peels
 
 
 if __name__ == '__main__':
