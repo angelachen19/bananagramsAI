@@ -222,9 +222,23 @@ class Game:
             else:
                 x += 1
 
+    # getTiles()
+    # Returns an array of Tile objects that are currently on the board
+    def getTiles(self):
+        currentBoard = []
+        for ii in range(self.COLS):
+            for jj in range(self.ROWS):
+                if self.array[ii][jj].getLetter() != ' ':
+                    currentBoard.append(self.array[ii][jj])
+        # test = []
+        # for i in range(len(currentBoard)):
+        #     test.append(currentBoard[i].getLetter())
+        return currentBoard
+
     # resetBoard()
     # Puts letters back into initial position for player to rebuild board after peeling
     def resetBoard(self):
+        self.resetBoard = True
         currentBoard = []
         for ii in range(self.COLS):
             for jj in range(self.ROWS):
@@ -245,6 +259,7 @@ class Game:
                 y += 1
             else:
                 x += 1
+        self.resetBoard = False
 
     # reset()
     # Resets the game to initial game state
@@ -272,6 +287,7 @@ class Game:
         self.mousey = 0
         # If complete is True, the game is completed and there are no more letters to add to the board
         self.complete = False
+        self.resetBoard = False
         self.freshletters(21)
 
     # checkdictionary(string)
@@ -499,8 +515,11 @@ class Game:
                         # test: reset
                         self.reset()
                     if myevent.key == K_b:
-                        # test: reset
+                        # test: resetBoard
                         self.resetBoard()
+                    if myevent.key == K_t:
+                        # test: getTiles()
+                        self.getTiles()
             except IndexError:
                 continue
 
