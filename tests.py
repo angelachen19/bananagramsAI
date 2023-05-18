@@ -69,14 +69,18 @@ class TestAlgos(unittest.TestCase):
         self.assertEqual(get_first_word(self.__class__.tiles_3, "", [], self.__class__.test_dawg_root), "CHAFED",
                          get_first_word(self.__class__.tiles_3, "", [], self.__class__.test_dawg_root) + " is not equal to CHAFED")
 
-    game = Game()
     # test find_word_and_loc
-
-    def find_word_and_loc1(self):
-        output = find_word_and_loc(game, self.__class__.test_dawg_root)
-        self.assertEqual((output[0], output[1]), (13, 13),
-                         output[0] + ", " + output[1] + " is not 13, 13")
     # test play_word
+    def test_play_word1(self):
+        game = Game()
+        play_word(game, 8, 8, 'CAY', True)
+        output = find_word_and_loc(game, self.__class__.test_dawg_root)
+        self.assertEqual(output[0], 10, str(output[0]) + ' is not 10')
+        self.assertEqual(output[1], 7, str(output[1]) + ' is not 7')
+        self.assertEqual(output[2], 'BY', output[2] + ' is not BY')
+        self.assertEqual(output[3], False, str(
+            output[3]) + ' is not False (vertical)')
+        play_word(game, output[0], output[1], output[2], output[3])
 
 
 if __name__ == "__main__":

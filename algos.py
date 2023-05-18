@@ -1,5 +1,8 @@
 from tile import Tile, POINTS
 import game
+from pygame import *
+from time import sleep
+
 # start of DAWG Implementation from scrabble-solver by aydinschwa on github https://github.com/aydinschwa/Scrabble-Solver/ for DAWG implementation
 
 # the class of the node in DAWG
@@ -174,26 +177,36 @@ def find_word_and_loc(game, dawg):
         # word needs to contain the anchor to be connected to the board
         anchor_index = word.find(anchor_tile.letter)
         if anchor_index != -1:
-            isHorizontal = True
-            isVertical = True
+            left_empty = True
+            right_empty = True
+            above_empty = True
+            below_empty = True
             for i in range(anchor_index):
                 # check that each tile to the left of anchor is blank
-                if (col-i) < 0 or game.array[col-i][row] == ' ':
-                    isHorizontal = False
+                if (col-i-1) < 0 or game.array[col-i-1][row].getLetter() != ' ':
+                    left_empty = False
                 # check above anchor
-                if (row-i) < 0 or game.array[col][row-i] == ' ':
-                    isVertical = False
+                if (row-i-1) < 0 or game.array[col][row-i-1].getLetter() != ' ':
+                    above_empty = False
             for j in range(anchor_index+1, len(word)):
                 # check to the right of anchor
-                if (col+j) >= game.ROWS or game.array[col+j][row] == ' ':
-                    isHorizontal = False
+                if (col+j) >= game.ROWS or game.array[col+j][row].getLetter() != ' ':
+                    right_empty = False
                 # check below anchor
-                if (row+j) >= game.COLS or game.array[col][row+j] == ' ':
-                    isVertical = False
+                if (row+j) >= game.COLS or game.array[col][row+j].getLetter() != ' ':
+                    below_empty = False
+            isHorizontal = left_empty and right_empty
+            isVertical = above_empty and below_empty
             # if word is playable
             if (isHorizontal or isVertical):
-                playable.append((col, row, word, isHorizontal))
+                if isHorizontal:
+                    playable.append(
+                        (col, row, word, True))
+                else:
+                    playable.append(
+                        (col, row-anchor_index, word, False))
                 playable_words.append(word)
+        rack = rack[:-1]
     opt = get_highest_scoring(playable_words)
     idx = playable_words.index(opt)
     # returns the tuple of the form (col, row, word, isHorizontal) at index idx
@@ -214,9 +227,12 @@ def play_word(game, col, row, word, isHorizontal):
     while word_copy:
         for ii in range(game.COLS):
             for jj in range(game.ROWS):
-                if game.array[ii][jj].lower() in word_copy:
-                    word_copy = word_copy.replace(game.array[ii][jj], "")
-                    game.array[ii][jj] = ' '
+                tile = game.array[ii][jj]
+                letter = tile.getLetter().lower()
+                if letter in word_copy:
+                    word_copy = word_copy.replace(
+                        letter, "")
+                    tile.letter = ' '
     for i in range(len(word)):
         tile = Tile(word[i].upper())
         tile.setIsPlaced(True)
@@ -224,6 +240,10 @@ def play_word(game, col, row, word, isHorizontal):
             game.array[col+i][row] = tile
         else:
             game.array[col][row+i] = tile
+        game.drawconsole()
+        game.drawgameboard()
+        display.flip()
+        sleep(0.15)
     return game.array
 
 

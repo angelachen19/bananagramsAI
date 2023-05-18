@@ -208,9 +208,10 @@ class Game:
                 self.drawconsole()
                 self.drawgameboard()
                 display.flip()
-                if skipanimation == False:
-                    sleep(0.15)
-                    # soundpop.play()
+                sleep(0.15)
+                # if skipanimation == False:
+                #     sleep(0.15)
+                # soundpop.play()
                 for myevent in event.get():
                     if myevent.type == MOUSEBUTTONDOWN or myevent.type == KEYDOWN:
                         skipanimation = True
