@@ -208,9 +208,13 @@ def find_word_and_loc(game, dawg):
                 playable_words.append(word)
         rack = rack[:-1]
     opt = get_highest_scoring(playable_words)
-    idx = playable_words.index(opt)
-    # returns the tuple of the form (col, row, word, isHorizontal) at index idx
-    return playable[idx]
+    try:
+        idx = playable_words.index(opt)
+        # returns the tuple of the form (col, row, word, isHorizontal) at index idx
+        return playable[idx]
+    except ValueError as e:
+        print(e)
+        game.reset()
 
 
 def play_word(game, col, row, word, isHorizontal):
@@ -236,6 +240,7 @@ def play_word(game, col, row, word, isHorizontal):
     for i in range(len(word)):
         tile = Tile(word[i].upper())
         tile.setIsPlaced(True)
+        game.score += score(word)
         if isHorizontal:
             game.array[col+i][row] = tile
         else:
@@ -243,12 +248,15 @@ def play_word(game, col, row, word, isHorizontal):
         game.drawconsole()
         game.drawgameboard()
         display.flip()
-        sleep(0.15)
+        sleep(0.05)
     return game.array
 
 
 def play_until_peel(game, dawg, max_iter=10):
     """""
+    Plays from beginning of the game until able to peel. Return
+    True if all tiles can be used in fewer than max_iter tries, and
+    return False otherwise.
 
     game: Game object
     dawg: dawg of valid words
@@ -267,6 +275,17 @@ def play_until_peel(game, dawg, max_iter=10):
                 tiles.remove(t)
 
     attempts = 0
-    while tiles and attempts < iter:
-        play_word(find_word_and_loc(game, dawg))
-        attempts += 1
+    while tiles and attempts < max_iter:
+        try:
+            col, row, word, isHorizontal = find_word_and_loc(game, dawg)
+            for l in word:
+                for _, t in enumerate(tiles):
+                    if t.getLetter() == l:
+                        tiles.remove(t)
+            play_word(col, row, word, isHorizontal)
+            attempts += 1
+        except TypeError as e:
+            continue
+    if tiles == []:
+        return True
+    return False

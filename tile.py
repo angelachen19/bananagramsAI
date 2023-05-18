@@ -20,5 +20,9 @@ class Tile:
         return self.letter
 
     # setter for isPlaced
-    def setIsPlaced(self, isPlaced):
-        self.isPlaced = isPlaced
+    def setIsPlaced(self, bool):
+        self.isPlaced = bool
+
+    # getter for isPlaced
+    def getIsPlaced(self) -> bool:
+        return self.isPlaced

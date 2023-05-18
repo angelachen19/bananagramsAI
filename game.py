@@ -7,6 +7,7 @@ import mmap
 from time import sleep
 import numpy as np
 import tile as tile
+import algos
 
 # import algos
 
@@ -24,7 +25,7 @@ class Game:
         self.SIZE = SIZE
         self.array = [[tile.Tile(' ')]*self.ROWS for x in range(self.COLS)]
         self.invalid = []
-        self.isTesting = True
+        self.isTesting = False  # testing flag
 
         self.screenwidth = int(self.SIZE * self.COLS)
         self.screenheight = int(self.SIZE * self.ROWS)
@@ -37,6 +38,7 @@ class Game:
             [self.screenwidth + self.framehor*2, self.screenheight + self.framever*5])
         display.set_caption("BANANAGRAMS!")
         self.screen.fill([200, 200, 100])
+        self.dawg = algos.Node()
         self.reset()
 
     # drawconsole()
@@ -211,7 +213,7 @@ class Game:
                 self.drawconsole()
                 self.drawgameboard()
                 display.flip()
-                sleep(0.15)
+                sleep(0.05)
                 # if skipanimation == False:
                 #     sleep(0.15)
                 # soundpop.play()
@@ -234,7 +236,7 @@ class Game:
                 self.drawgameboard()
                 display.flip()
                 if skipanimation == False:
-                    sleep(0.15)
+                    sleep(0.05)
                     # soundpop.play()
                 for myevent in event.get():
                     if myevent.type == MOUSEBUTTONDOWN or myevent.type == KEYDOWN:
@@ -310,6 +312,7 @@ class Game:
         # If complete is True, the game is completed and there are no more letters to add to the board
         self.complete = False
         self.numBoardShuffles = 0
+        self.score = 0
         self.freshletters(21)
 
     # checkdictionary(string)
@@ -560,19 +563,37 @@ class Game:
         display.flip()
 
     # ---- AI functions -----
+    # getDawg()
+    # Initialize a DAWG
+    def getDawg(self):
+        file = open("dictionary.txt", "r")
+        data = file.read()
+        scrabble_dict = data.split("\n")  # list of valid scrabble words
+        self.dawg = algos.create_dawg(scrabble_dict)
+        print(self.dawg)
+        file.close()
+
     # playAction()
     # Plays the given action on the game board
     # Returns reward, complete, # of peels, score
+
     def playAction(self, action):
-        for myevent in event.get():
-            if event.type == QUIT:
-                quit()
+        for myevent in event.get():  # User did something
+            if myevent.type == QUIT:  # If user clicked close
+                self.done = True  # Flag that we are done so we exit this loop
         reward = 0
         (placed, notPlaced) = self.countPlacedTiles()
         # parse action into correct move
         if action == 0:
-            # TODO place tiles
-            do = 0
+            fullBoard = algos.play_until_peel(self, self.dawg)
+            if fullBoard:
+                reward += 10
+            elif placed > notPlaced or self.score >= 20:
+                reward += 5
+            elif notPlaced > placed:
+                reward -= 10
+            elif self.score < 20:
+                reward -= 2
         elif action == 1:  # peel a letter
             if self.checkwords() == True:
                 # reward when entire board is complete and valid
@@ -587,13 +608,13 @@ class Game:
                 reward -= 10
                 print(
                     'Maximum of 5 reshuffles per game exceeded. Restarting game now...')
-                sleep(0.15)
+                sleep(0.05)
                 self.resets += 1
-                self.reset()
+                # self.reset()
         elif action == 3:  # reset entire game
             reward -= 10
-            self.resets += 1
-            self.reset()
+            # self.resets += 1
+            # self.reset()
             return reward, self.complete, self.numBoardShuffles, self.gametime
 
         # update GUI
