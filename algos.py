@@ -1,3 +1,4 @@
+from tile import Tile, POINTS
 # start of DAWG Implementation from scrabble-solver by aydinschwa on github https://github.com/aydinschwa/Scrabble-Solver/ for DAWG implementation
 
 # the class of the node in DAWG
@@ -110,177 +111,34 @@ def score(word):
         score += POINTS[i]
     return score
 
-# Referenced
 
-
-def word_from_start(start, pool, dawg):
+def get_first_word(tiles, curr_word, valid_words, curr_node):
     """
-    Return the highest scoring word with prefix of `start` and using
-    letters from the pool `pool`
+    return the best first word based on a set of tiles
 
-    start: letter
-    visited: list of letters we tried
-    pool: list of letters in hand
+    tiles: list of tile objects
     dawg: points to the root node of our DAWG
     """
-    best_word = ''
-    stack = []
-    stack.append((start, dawg))
-
-    while len(stack) > 0:
-        curr = stack.pop()  # tuple of a string and node
-        curr_node = curr[1]
-        for letter in pool:
-            if letter not in curr_node.children:
-                continue
-            letter_node = curr_node.children.get(letter)
-            temp = curr[0]+letter  # temporarily append letter
-            if is_valid_word(temp, dawg) and score(temp) > score(best_word):
-                best_word = temp
-            stack.append((letter, letter_node))
-    return best_word
+    if len(tiles) == 0:
+        return get_highest_scoring(valid_words)
+    for l in curr_node.children:
+        for idx, t in enumerate(tiles):
+            letter = t.getLetter()
+            if l == letter:
+                tiles_copy = tiles[:idx]+tiles[idx+1:]
+                next_word = curr_word+letter
+                child = curr_node.children[l]
+                if child.terminal:
+                    valid_words.append(next_word)
+                get_first_word(tiles_copy, next_word, valid_words, child)
+    return get_highest_scoring(valid_words)
 
 
-# def get_first_word(tiles, dawg):
-#     """
-#     return the best first word based on a set of tiles
-
-#     tiles: list of tile objects
-#     dawg: points to the root node of our DAWG
-#     """
-#     opt_word = ''
-#     highest_score = 0
-#     for letter in tiles:
-#         pool = tiles.copy().remove(letter)
-#         current_best_word = word_from_start(letter, pool, dawg)
-#         if score(current_best_word) > highest_score:
-#             opt_word = current_best_word
-#             highest_score = score(current_best_word)
-#     return opt_word
-
-
-# def get_first_word(tiles, dawg):
-#     """
-#     return the best first word based on a set of tiles
-
-#     tiles: list of tile objexts
-#     dawg: points to the root node of our DAWG
-#     """
-#     opt_word = ''
-#     highest_score = 0
-#     curr_node = dawg
-#     curr_word = ''
-
-#     for t in enumerate(tiles):
-#         letter = get_letter(tiles[t])
-#         curr_word = letter
-#         tiles_copy = tiles.copy()
-#         unused = tiles_copy.remove(letter)
-#         for t_2 in enumerate(unused):
-#             letter_2 = get_letter(tiles[t_2])
-#             if letter_2 in curr_node.children():
-#                 curr_word += letter
-#                 curr_node = curr_node.children[letter]
-#                 unused = unused.remove(letter)
-#                 # get_first_word()
-#                 if curr_node.terminal and score(curr_word) > highest_score:
-#                     opt_word = curr_word
-#                     highest_score = score(curr_word)
-#     return opt_word
-
-
-class Node:
-    """
-    Represents a node in DAWG. Each node has a list of its edges to other nodes
-    Nodes are equivalent if they have the same edges leading to the same states. 
-    It can be used as a key in a dictionary with the __hash__ and__eq__ 
-    functions.
-    """
-    next_id = 0
-
-    def __init__(self):
-        # terminal = a word ends at that location
-        self.is_terminal = False
-        self.id = Node.next_id
-        Node.next_id += 1
-        self.edges = {}
-
-    def __str__(self):
-        out = [f"Node {self.id}\nChildren:\n"]
-        letter_child_dict = self.children.items()
-        for letter, child in letter_child_dict:
-            out.append(f" {letter} -> {child.id}\n")
-        return " ".join(out)
-
-    def __repr__(self):
-        out = []
-        if self.is_terminal:
-            out.append("1")
-        else:
-            out.append("0")
-        for key, val in self.edges.items():
-            out.append(key)
-            out.append(str(val.id))
-        return "_".join(out)
-
-    def __hash__(self):
-        return self.__repr__().__hash__()
-
-    def __eq__(self, other):
-        return self.__repr__() == other.__repr__()
-
-
-def create_dawg(dict):
-    """
-    Create a directed acyclic word graph (DAWG) and output to a textfile
-    """
-    # create root (parent for tree)
-    root = Node()
-
-
-def search_dawg(word, node):
-    """
-    Recursively find a word in DAWG, starting from a certain node
-    """
-    pass
-
-
-def best_first_word(search_dawg=search_dawg(), calculate_score=calculate_score):
-    """
-    Finding the best first word given the set of tiles. Best meaning the maximum 
-    score based on the scrabble scoring. Here we call on dawg with the seed nodes
-    as nothing.
-
-    Parameters
-    =======
-
-
-    Returns
-    =======
-    new_board: 2D matrix, state of the board with the best first word
-    """
-    # find the longest word given the seed and set of tiles
-    # check if word is in DAWG
-    best_word = ''
-    highest_score = 0
-
-    # for i in range(len(tiles)):
-    #     for j in range(i+1, len(tiles)+1):
-    pass
-
-
-def heuristic(curr_board, tile_pool, best_first_word=best_first_word):
-    """
-    Completing the curr_board with values from tile_pool with heuristics of 
-    best_first_word
-
-    Parameters
-    =======
-    curr_board: 2D matrix, current state of board
-    tile_pool: tiles to draw from
-
-    Returns
-    =======
-    new_board: 2D matrix, state of the board with the best first word
-    """
-    pass
+def get_highest_scoring(valid_words):
+    opt = ""
+    max_score = 0
+    for word in valid_words:
+        if score(word) >= max_score:
+            opt = word
+            max_score = score(word)
+    return opt

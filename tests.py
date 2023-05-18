@@ -1,4 +1,5 @@
 from algos import *
+from tile import Tile
 import unittest
 
 # Check if we get the right number of tiles in hand
@@ -43,28 +44,29 @@ class TestAlgos(unittest.TestCase):
                          True, "PRODDE is not a prefix")
 
     # Testing first word
-    tile_A = Tile(A)
-    tile_B = Tile(B)
-    tile_C = Tile(C)
-    tile_D = Tile(D)
-    tile_E = Tile(E)
-    tile_F = Tile(F)
-    tile_G = Tile(G)
-    tile_H = Tile(H)
+    tile_A = Tile("A")
+    tile_B = Tile("B")
+    tile_C = Tile("C")
+    tile_D = Tile("D")
+    tile_E = Tile("E")
+    tile_F = Tile("F")
+    tile_G = Tile("G")
+    tile_H = Tile("H")
     tiles_1 = [tile_A, tile_B, tile_C, tile_D]
     tiles_2 = [tile_E, tile_F, tile_G, tile_H]
-    tiles_3 = [tile_A, tile_B, tile_C, tile_D, tile_E, tile_F, tile_G, tile_Hs]
+    tiles_3 = [tile_A, tile_B, tile_C, tile_D, tile_E, tile_F, tile_G, tile_H]
 
-    def test_get_first_word(self):
-        self.assertEquals(get_first_word(
-            self.__class__.tiles_1, self.__class__.test_dawg_root), "CAB", get_first_word(
-            self.__class__.tiles_1, self.__class__.test_dawg_root) + " is not equal to CAB")
-        self.assertEquals(get_first_word(
-            self.__class__.tiles_2, self.__class__.test_dawg_root), "FEH", get_first_word(
-            self.__class__.tiles_2, self.__class__.test_dawg_root) + " is not equal to FEH")
-        self.assertEquals(get_first_word(
-            self.__class__.tiles_3, self.__class__.test_dawg_root), "CHAFED", get_first_word(
-            self.__class__.tiles_3, self.__class__.test_dawg_root) + " is not equal to CHAFED")
+    def test_get_first_word1(self):
+        self.assertEqual(get_first_word(self.__class__.tiles_1, "", [], self.__class__.test_dawg_root), "CAB",
+                         get_first_word(self.__class__.tiles_1, "", [], self.__class__.test_dawg_root) + "not equal to CAB")
+
+    def test_get_first_word2(self):
+        self.assertEqual(get_first_word(self.__class__.tiles_2, "", [], self.__class__.test_dawg_root), "FEH",
+                         get_first_word(self.__class__.tiles_2, "", [], self.__class__.test_dawg_root) + " is not equal to FEH")
+
+    def test_get_first_word3(self):
+        self.assertEqual(get_first_word(self.__class__.tiles_3, "", [], self.__class__.test_dawg_root), "CHAFED",
+                         get_first_word(self.__class__.tiles_3, "", [], self.__class__.test_dawg_root) + " is not equal to CHAFED")
 
 
 if __name__ == "__main__":
